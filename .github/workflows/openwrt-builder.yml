@@ -80,12 +80,16 @@ jobs:
 
     - name: Download package
       id: package
+      timeout-minutes: 60
       run: |
         cd openwrt
         make defconfig
-        make download -j8
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        echo "========== 开始下载 OpenWrt 依赖 =========="
+          timeout 55m make download -j8 V=s
+          echo "========== 检查下载文件 =========="
+          find dl -type f -size -1024c -print
+          find dl -type f -size -1024c -delete
+          echo "========== 下载阶段完成 =========="
 
     - name: Compile the firmware
       id: compile
